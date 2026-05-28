@@ -1,0 +1,13 @@
+.secrets/
+.mysqlsh/
+__pycache__/
+*.py[cod]
+
+# Generated extracts and reports
+extracted_data/
+reports/
+
+# Local/editor noise
+.vscode/
+.idea/
+*.log
