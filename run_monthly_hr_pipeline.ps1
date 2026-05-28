@@ -12,13 +12,19 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
 $credentialFile = Join-Path $root $CredentialPath
-if (-not (Test-Path -LiteralPath $credentialFile)) {
-    throw "Credential file not found: $credentialFile. Run setup_hr_mysql_credential.ps1 first."
-}
+$mysqlUser = $null
+$mysqlPassword = $null
 
-$credential = Import-Clixml -Path $credentialFile
-$mysqlUser = $credential.UserName
-$mysqlPassword = $credential.GetNetworkCredential().Password
+if (Test-Path -LiteralPath $credentialFile) {
+    $credential = Import-Clixml -Path $credentialFile
+    $mysqlUser = $credential.UserName
+    $mysqlPassword = $credential.GetNetworkCredential().Password
+} elseif ($env:HR_MYSQL_USER -and $env:HR_MYSQL_PASSWORD) {
+    $mysqlUser = $env:HR_MYSQL_USER
+    $mysqlPassword = $env:HR_MYSQL_PASSWORD
+} else {
+    throw "MySQL credential not found. Run setup_hr_mysql_credential.ps1 locally, or set HR_MYSQL_USER and HR_MYSQL_PASSWORD as environment variables/GitHub Secrets."
+}
 
 $mysqlshConfig = Join-Path $root ".mysqlsh"
 New-Item -ItemType Directory -Force -Path $mysqlshConfig | Out-Null

@@ -1,0 +1,30 @@
+name: HR Monthly Extract And Report
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub cron uses UTC. 13:00 UTC is 9:00 AM Eastern during daylight saving time.
+    - cron: "0 13 1 * *"
+
+jobs:
+  hr-pipeline:
+    name: Run HR payroll pipeline
+    runs-on: [self-hosted, Windows]
+    env:
+      HR_MYSQL_USER: ${{ secrets.HR_MYSQL_USER }}
+      HR_MYSQL_PASSWORD: ${{ secrets.HR_MYSQL_PASSWORD }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run extract and report
+        shell: powershell
+        run: .\run_monthly_hr_pipeline.ps1
+
+      - name: Upload generated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: hr-output-${{ github.run_number }}
+          path: |
+            extracted_data/*.csv
+            reports/*.html

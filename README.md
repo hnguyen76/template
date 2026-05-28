@@ -30,6 +30,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\register_monthly_hr_task.p
 
 Generated CSV and report files are intentionally ignored by Git.
 
+## GitHub Actions
+
+The workflow in `.github/workflows/hr-monthly.yml` runs the same pipeline monthly or manually from the GitHub Actions tab.
+
+Because the database host is `127.0.0.1`, this workflow requires a self-hosted Windows runner on the machine that can reach MySQL. A GitHub-hosted runner cannot connect to your local MySQL server.
+
+Required repo secrets:
+
+- `HR_MYSQL_USER`
+- `HR_MYSQL_PASSWORD`
+
+The runner machine also needs `mysqlsh` and `python` available in `PATH`.
+
 ## Output Naming
 
 - CSV extract: `hr_employee_connected_extract_YYYYMMDDHHMM.csv`
