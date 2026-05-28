@@ -32,7 +32,7 @@ $reportDir = Join-Path $root "reports"
 New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
 New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
 
-$extractFile = Join-Path $extractDir "hr_connected_$OutputDate.csv"
+$extractFile = Join-Path $extractDir "hr_employee_connected_extract_$OutputDate.csv"
 
 Write-Host "Running HR SQL extract..."
 $jsonLines = & $mysqlshCommand `

@@ -13,7 +13,9 @@ from typing import Any
 
 TIMESTAMP_IN_NAME = re.compile(r"(20\d{2})(\d{2})(\d{2})(\d{2})(\d{2})")
 DASHED_DATE_IN_NAME = re.compile(r"(20\d{2}-\d{2}-\d{2})")
-CONNECTED_EXTRACT_PREFIX = "hr_connected_"
+OUTPUT_EXTRACT_PREFIX = "hr_employee_connected_extract_"
+LEGACY_EXTRACT_PREFIXES = ("hr_connected_",)
+CONNECTED_EXTRACT_PREFIXES = (OUTPUT_EXTRACT_PREFIX, *LEGACY_EXTRACT_PREFIXES)
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,8 +60,9 @@ def extract_score(path: Path) -> tuple[datetime, float]:
 def list_connected_extracts(input_dir: Path) -> list[Path]:
     csv_files = [
         path
-        for path in input_dir.glob(f"{CONNECTED_EXTRACT_PREFIX}*.csv")
+        for path in input_dir.glob("*.csv")
         if path.is_file()
+        and path.name.startswith(CONNECTED_EXTRACT_PREFIXES)
     ]
     if not csv_files:
         raise FileNotFoundError(f"No connected HR CSV files found in {input_dir}")
@@ -746,7 +749,7 @@ def main() -> None:
 
     report_timestamp = extract_timestamp_from_name(source_file) or datetime.now()
     report_stamp = report_timestamp.strftime("%Y%m%d%H%M")
-    output_file = Path(args.output_dir) / f"hr_report_{report_stamp}.html"
+    output_file = Path(args.output_dir) / f"hr_workforce_payroll_report_{report_stamp}.html"
     render_report(
         source_file,
         output_file,
