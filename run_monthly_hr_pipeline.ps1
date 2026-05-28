@@ -3,7 +3,8 @@ param(
     [string]$OutputDate = (Get-Date -Format "yyyyMMddHHmm"),
     [string]$Database = "hr",
     [string]$HostName = "127.0.0.1",
-    [int]$Port = 3306
+    [int]$Port = 3306,
+    [switch]$SkipReport
 )
 
 $ErrorActionPreference = "Stop"
@@ -93,6 +94,12 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
 $rows | Export-Csv @exportCsvParams
 Write-Host "CSV written: $extractFile"
 Write-Host "Rows: $(@($rows).Count)"
+
+if ($SkipReport) {
+    Write-Host "Report generation skipped."
+    Write-Host "HR SQL extract completed."
+    return
+}
 
 Write-Host "Generating HR report..."
 & $pythonCommand "generate_hr_report.py" --input-dir $extractDir --output-dir $reportDir
